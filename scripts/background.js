@@ -1,5 +1,8 @@
 import { clientId, clientSecret } from "../credentials.js";
 
+let lastPush = 0;
+let COOLDOWN = 2000;
+
 chrome.runtime.onInstalled.addListener(({ reason }) => {
   if (reason === "install") {
     chrome.tabs.create({
@@ -341,6 +344,12 @@ chrome.runtime.onMessage.addListener(async (request) => {
 });
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+  const now = Date.now();
+  if (now - lastPush < COOLDOWN){
+    console.log('too many listeners being added at once')
+    return;
+  }
+  lastPush = now;
   if (request.action === "pushToGithub") {
     const { githubUsername, repo, directory, accessToken } =
       await chrome.storage.local.get([

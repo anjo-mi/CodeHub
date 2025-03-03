@@ -61,6 +61,10 @@ chrome.storage.local.get(["isRepoConnected"], (result) => {
       };
 
       const getData = async () => {
+        const submissionReady = !(document.getElementById('submit_btn').classList.contains('is-hidden'));
+        console.log({submissionReady})
+        if (!submissionReady) return;
+
         interceptRedirection();
         await getChallengeInfo();
         data["languageOfUserSolution"] = document
